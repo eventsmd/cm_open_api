@@ -19,21 +19,21 @@ type Outage struct {
 	RegionName  *string `json:"region_name,omitempty"`
 
 	CityKladr *string `json:"city_kladr,omitempty"`
-	CityName  string  `json:"city_name"`
+	CityName  *string `json:"city_name"`
 	CityType  *string `json:"city_type,omitempty"`
 
 	StreetKladr  *string  `json:"street_kladr,omitempty"`
-	StreetName   string   `json:"street_name"`
-	StreetType   string   `json:"street_type"`
+	StreetName   *string  `json:"street_name"`
+	StreetType   *string  `json:"street_type"`
 	HouseNumbers []string `json:"house_numbers,omitempty"`
 	HouseRanges  []string `json:"house_ranges,omitempty"`
 }
 
 type Source struct {
-	Channel    string `json:"channel"`
-	SenderURI  string `json:"sender_uri"`
-	SenderName string `json:"sender_name"`
-	SourceURI  string `json:"source_uri"`
+	Channel    *string `json:"channel"`
+	SenderURI  *string `json:"sender_uri"`
+	SenderName *string `json:"sender_name"`
+	SourceURI  *string `json:"source_uri"`
 }
 
 type SourceResponse struct {

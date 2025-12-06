@@ -2,19 +2,18 @@ package config
 
 import (
 	"os"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Config struct {
-	PostgresConnStr   string
-	DynamoDBTableName string
-	DynamoDBRegion    string
+	PostgresConnStr string
+	DB              *pgxpool.Pool
 }
 
 func LoadConfig() (*Config, error) {
 
 	return &Config{
-		PostgresConnStr:   os.Getenv("POSTGRES_CONN_STR"),
-		DynamoDBTableName: os.Getenv("DYNAMODB_TABLE_NAME"),
-		DynamoDBRegion:    os.Getenv("AWS_REGION"),
+		PostgresConnStr: os.Getenv("POSTGRES_CONN_STR"),
 	}, nil
 }
