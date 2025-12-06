@@ -1,0 +1,42 @@
+name: Build with Buildpacks
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up pack CLI
+        uses: buildpacks/github-actions/setup-pack@v5.9.1
+
+      - name: Build and publish image with Buildpacks (Paketo)
+        id: pack
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+        run: |
+          echo "Building $IMAGE"
+          pack build "$IMAGE" \
+            --path . \
+            --builder paketobuildpacks/builder-jammy-base \
+            --publish
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Show resulting image reference
+        run: echo "Built image ${{ steps.pack.outputs.image }}"

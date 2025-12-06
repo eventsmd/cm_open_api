@@ -2,15 +2,15 @@ package handlers
 
 import (
 	"cm_open_api/internal/config"
-	"cm_open_api/internal/dynamodb"
 	"cm_open_api/internal/postgres"
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func SetupRouter(cfg *config.Config) http.Handler {
@@ -27,7 +27,7 @@ func SetupRouter(cfg *config.Config) http.Handler {
 
 func getOutages(cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		outages, err := postgres.GetOutages(cfg.PostgresConnStr)
+		outages, err := postgres.GetOutages(r.Context(), cfg.DB)
 		if err != nil {
 			log.Printf("Error getting outages: %v", err)
 			http.Error(w, "Error getting outages", http.StatusInternalServerError)
@@ -57,11 +57,8 @@ func getSource(cfg *config.Config) http.HandlerFunc {
 			http.Error(w, "Invalid message_id format", http.StatusBadRequest)
 			return
 		}
-		incidentID := parts[1]
-		parts_pre := strings.Split(parts[0], "_")
-		key := parts_pre[0] + "_ms:" + incidentID
 
-		source, err := dynamodb.GetSource(cfg.DynamoDBRegion, cfg.DynamoDBTableName, key)
+		source, err := postgres.GetSource(r.Context(), cfg.DB, parts[1], parts[0])
 		if err != nil {
 			log.Printf("Error getting source: %v", err)
 			http.Error(w, "Error getting source", http.StatusInternalServerError)
