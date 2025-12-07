@@ -67,6 +67,15 @@ ORDER BY event_start
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
 
+		if outage.Organization == "" {
+			if outage.Service != "water" {
+				outage.Organization = "ГУП \"Водоснабжение и водоотведение\""
+			}
+			if outage.Service == "electricity" {
+				outage.Organization = "ГУП \"ЕРЭС\""
+			}
+		}
+
 		if eventStart != nil {
 			outage.EventStart = *eventStart
 		}
