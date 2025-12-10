@@ -18,7 +18,7 @@ select
     a.chat_id::text || ':' || a.message_id::text || ':' || a.id::text as id,
     m.incident_id,
     m.context->'supplier' as service,
-    t.organization,
+    NULLIF(t.organization, ''),
     t.description,
     t.event,
     t.event_start,
@@ -54,9 +54,11 @@ ORDER BY event_start
 		var regionKladr, regionType, regionName, streetKladr, houseNumbers, houseRanges *string
 		var cityKladr, cityName, cityType, streetName, streetType *string
 		var eventStart, eventStop *time.Time
+		// Organization can be NULL in DB (we use NULLIF in SQL), so scan into sql.NullString
+		var organizationNS sql.NullString
 
 		err := rows.Scan(
-			&outage.MessageID, &outage.IncidentID, &outage.Service, &outage.Organization,
+			&outage.MessageID, &outage.IncidentID, &outage.Service, &organizationNS,
 			&outage.ShortDescription, &outage.Event, &eventStart, &eventStop,
 			&regionKladr, &regionType, &regionName,
 			&cityKladr, &cityName, &cityType,
@@ -65,6 +67,10 @@ ORDER BY event_start
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+
+		if organizationNS.Valid {
+			outage.Organization = organizationNS.String
 		}
 
 		if outage.Organization == "" {
