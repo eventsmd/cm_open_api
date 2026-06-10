@@ -17,6 +17,7 @@ func SetupRouter(cfg *config.Config) http.Handler {
 	r := mux.NewRouter()
 	r.HandleFunc("/v1/api/outages", getOutages(cfg)).Methods("GET")
 	r.HandleFunc("/v1/api/outages/{message_id}/source", getSource(cfg)).Methods("GET")
+	r.HandleFunc("/v1/api/heatmap/aggregates", getHeatmapAggregates(cfg)).Methods("GET")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
