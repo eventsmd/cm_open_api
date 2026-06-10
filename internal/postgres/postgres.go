@@ -115,6 +115,7 @@ ORDER BY event_start
 		if streetType != nil {
 			outage.StreetType = streetType
 		}
+		// Keep delimiters in sync with internal/houses.
 		if houseNumbers != nil {
 			outage.HouseNumbers = strings.Split(*houseNumbers, ",")
 		}
